@@ -15,6 +15,8 @@ export class SymenergyScanner {
 
     const webCrawlResult = await webCrawler.crawl();
 
+    browser.close()
+
     return { status: 'passed', usage: webCrawlResult.usage };
   }
 }

@@ -39,14 +39,23 @@ export class SymenergyCrawler {
 
     // Submit
     await page.click('button[type="submit"]');
+    await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
   }
 
   async dailyUsage(page: Page): Promise<number> {
     await page.goto(
       `https://www.symenergy.net/symenergy/amounts/${this.contractId}/daily`,
+      {
+        waitUntil: 'domcontentloaded',
+      },
     );
 
-    await page.waitForSelector('tr > td:nth-child(2)');
+    await page
+      .waitForSelector('tr > td:nth-child(2)', { visible: true })
+      .catch(async () => {
+        await page.screenshot({ path: 'testing-blog.png', fullPage: true });
+      });
+
     let usage = 0;
     const elements = await page.$$('tr > td:nth-child(2)');
     for (const element of elements) {
@@ -63,9 +72,6 @@ export class SymenergyCrawler {
     await this.login(page);
 
     const usage: number = await this.dailyUsage(page);
-
-    page.close();
-    browser.close();
 
     return { usage: usage };
   }
